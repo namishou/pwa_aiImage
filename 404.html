@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>AI画像編集</title>
+  <script>
+    // GitHub Pages SPA redirect
+    const path = window.location.pathname;
+    const search = window.location.search;
+    const hash = window.location.hash;
+    
+    // Store the path in sessionStorage for the main app to read
+    sessionStorage.setItem('spa-redirect', path + search + hash);
+    
+    // Redirect to the base path
+    window.location.replace('/pwa_aiImage/' + '?' + 'redirect=' + encodeURIComponent(path + search + hash));
+  </script>
+</head>
+<body>
+  <p>リダイレクト中...</p>
+</body>
+</html>
