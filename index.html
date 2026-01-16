@@ -40,22 +40,32 @@
       
       document.documentElement.classList.add('loaded');
     </script>
-    <script type="module" crossorigin src="/pwa_aiImage/assets/index-CLfhwUW-.js"></script>
-    <link rel="stylesheet" crossorigin href="/pwa_aiImage/assets/index-BguMe4Vo.css">
+    <script type="module" crossorigin src="/pwa_aiImage/assets/index-NGOLABjB.js"></script>
+    <link rel="stylesheet" crossorigin href="/pwa_aiImage/assets/index-0lDqI58p.css">
   </head>
 
   <body>
     <div id="root"></div>
     
     <script>
-      // Register Service Worker with dynamic path
+      // Register Service Worker with correct path for GitHub Pages
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          const basePath = document.querySelector('base')?.href || window.location.origin + '/';
-          const swPath = new URL('sw.js', basePath).pathname;
-          const scope = new URL('./', basePath).pathname;
+          // Detect the base path from the current URL
+          const pathname = window.location.pathname;
+          // Check if we're on a subdirectory deployment (e.g., /pwa_aiImage/)
+          const pathParts = pathname.split('/').filter(Boolean);
+          let basePath = '/';
           
-          navigator.serviceWorker.register(swPath, { scope }).then(function(registration) {
+          // If pathname starts with a known subdirectory, use it as base
+          if (pathParts.length > 0 && pathname.startsWith('/' + pathParts[0] + '/')) {
+            basePath = '/' + pathParts[0] + '/';
+          }
+          
+          const swPath = basePath + 'sw.js';
+          const scope = basePath;
+          
+          navigator.serviceWorker.register(swPath, { scope: scope }).then(function(registration) {
             console.log('SW registered:', registration.scope);
           }).catch(function(error) {
             console.log('SW registration failed:', error);
