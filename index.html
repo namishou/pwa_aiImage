@@ -32,7 +32,6 @@
         if (redirect) {
           const cleanPath = decodeURIComponent(redirect);
           sessionStorage.setItem('spa-redirect-path', cleanPath);
-          // Get base path from current location
           const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
           window.history.replaceState(null, '', basePath + '/');
         }
@@ -40,7 +39,7 @@
       
       document.documentElement.classList.add('loaded');
     </script>
-    <script type="module" crossorigin src="/pwa_aiImage/assets/index-NGOLABjB.js"></script>
+    <script type="module" crossorigin src="/pwa_aiImage/assets/index-DWrr30Sn.js"></script>
     <link rel="stylesheet" crossorigin href="/pwa_aiImage/assets/index-0lDqI58p.css">
   </head>
 
@@ -51,13 +50,10 @@
       // Register Service Worker with correct path for GitHub Pages
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          // Detect the base path from the current URL
           const pathname = window.location.pathname;
-          // Check if we're on a subdirectory deployment (e.g., /pwa_aiImage/)
           const pathParts = pathname.split('/').filter(Boolean);
           let basePath = '/';
           
-          // If pathname starts with a known subdirectory, use it as base
           if (pathParts.length > 0 && pathname.startsWith('/' + pathParts[0] + '/')) {
             basePath = '/' + pathParts[0] + '/';
           }
