@@ -1,4 +1,14 @@
-const CACHE_NAME = 'ai-image-editor-v1';
+// IMPORTANT:
+// - This app is used both on GitHub Pages and on Lovable preview domains.
+// - Aggressive runtime caching on preview domains can lead to mixed bundles
+//   (e.g. React / deps chunks from different builds), which may trigger
+//   "Invalid hook call" / "Cannot read properties of null (reading 'useRef')".
+// - Therefore, we ONLY enable caching on GitHub Pages.
+
+const IS_GITHUB_PAGES = self.location.hostname.endsWith('.github.io');
+
+// Bump cache version to ensure old caches are dropped after SW updates.
+const CACHE_NAME = 'ai-image-editor-v2';
 const BASE_PATH = '/pwa_aiImage/';
 
 const STATIC_ASSETS = [
@@ -8,28 +18,42 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  // On non-GitHub Pages hosts (e.g. Lovable preview), don't cache anything.
+  if (!IS_GITHUB_PAGES) {
+    self.skipWaiting();
+    return;
+  }
+
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
+    caches.keys().then((cacheNames) =>
+      Promise.all(
         cacheNames
-          .filter((name) => name !== CACHE_NAME)
+          // Delete everything except the current cache (and even that on non-GH pages)
+          .filter((name) => !IS_GITHUB_PAGES || name !== CACHE_NAME)
           .map((name) => caches.delete(name))
-      );
+      )
+    ).then(async () => {
+      // On Lovable preview domains, unregister so it never controls the app.
+      if (!IS_GITHUB_PAGES) {
+        await self.registration.unregister();
+      }
     })
   );
+
   self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
+  // Never cache on non-GitHub Pages hosts.
+  if (!IS_GITHUB_PAGES) return;
+
   const request = event.request;
   
   // Skip non-GET requests
